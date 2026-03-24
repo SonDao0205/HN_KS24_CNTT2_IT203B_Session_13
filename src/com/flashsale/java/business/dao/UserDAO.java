@@ -10,7 +10,7 @@ import java.util.List;
 public class UserDAO {
     public boolean isExist(String username, String email) {
         String sql = "SELECT COUNT(*) FROM Users WHERE username = ? OR email = ?";
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        try (Connection conn = DatabaseConnectionManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, username);
@@ -33,7 +33,7 @@ public class UserDAO {
         }
 
         String sql = "INSERT INTO Users (username, email) VALUES (?, ?)";
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        try (Connection conn = DatabaseConnectionManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, user.getUsername());
@@ -48,7 +48,7 @@ public class UserDAO {
 
     public Users getById(int id) {
         String sql = "SELECT * FROM Users WHERE id = ?";
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        try (Connection conn = DatabaseConnectionManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -70,7 +70,7 @@ public class UserDAO {
     public List<Users> getAll() {
         List<Users> list = new ArrayList<>();
         String sql = "SELECT * FROM Users";
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        try (Connection conn = DatabaseConnectionManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
@@ -89,7 +89,7 @@ public class UserDAO {
 
     public boolean update(Users user) {
         String sql = "UPDATE Users SET username = ?, email = ? WHERE id = ?";
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        try (Connection conn = DatabaseConnectionManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, user.getUsername());
@@ -105,7 +105,7 @@ public class UserDAO {
 
     public boolean delete(int id) {
         String sql = "DELETE FROM Users WHERE id = ?";
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        try (Connection conn = DatabaseConnectionManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);

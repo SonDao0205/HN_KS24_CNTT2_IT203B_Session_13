@@ -33,65 +33,43 @@ public class DatabaseConnectionManager {
 
     // hàm tự động đọc file
     public static void initDB(String filePath) {
-        try (
-//                Connection conn = openConnection();
-//                Statement stmt = conn.createStatement();
-//                Scanner sc = new Scanner(new File(fileString))
-                Scanner sc = new Scanner(new File(filePath));
-                Statement stmt = getConnection().createStatement()
-        ) {
-            sc.useDelimiter(";");
-//            String users = "create table if not exists Users(" +
-//                    "id int primary key auto_increment, " +
-//                    "name varchar(255) not null, " +
-//                    "email varchar(255) not null unique" +
-//                    ");";
-//
-//            String products = "create table if not exists Products(" +
-//                    "id int primary key auto_increment, " +
-//                    "name varchar(255) not null, " +
-//                    "price DECIMAL(15,2) not null check ( price > 0 ), " +
-//                    "category varchar(255) not null, " +
-//                    "stock int not null check ( stock >= 0 )" +
-//                    ");";
-//
-//            String orders = "create table if not exists Orders(" +
-//                    "id int primary key auto_increment, " +
-//                    "user_id int not null, " +
-//                    "foreign key (user_id) references Users(id), " +
-//                    "total_amount decimal(15,2) not null check ( total_amount >= 0 ), " +
-//                    "order_date DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-//                    "status ENUM('PENDING', 'PAID', 'CANCEL') DEFAULT 'PENDING'" +
-//                    ");";
-//
-//            String order_detail = "create table if not exists Order_Details(" +
-//                    "id int primary key auto_increment, " +
-//                    "order_id int not null, " +
-//                    "product_id int not null, " +
-//                    "foreign key (product_id) references Products(id), " +
-//                    "foreign key (order_id) references Orders(id), " +
-//                    "quantity int check (quantity >= 0 ), " +
-//                    "unit_price DECIMAL(15,2) not null check ( unit_price >= 0 ) " +
-//                    ");";
-//            stmt.executeUpdate(users);
-//            stmt.executeUpdate(products);
-//            stmt.executeUpdate(orders);
-//            stmt.executeUpdate(order_detail);
-            while (sc.hasNext()) {
-                String sql = sc.next().trim();
-                if (!sql.isEmpty()) {
+        try {
+            // Đọc toàn bộ nội dung file SQL
+            String content = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(filePath)));
+
+            // Xóa các dòng comment để tránh lỗi vặt
+            content = content.replaceAll("(?m)^--.*", "");
+
+            try (Connection conn = getConnection();
+                 Statement stmt = conn.createStatement()) {
+
+                // Mẹo: Tách các câu lệnh theo dấu ;
+                // Nhưng đối với Procedure/Function, ta cần gửi nguyên khối.
+                // Một cách đơn giản là tách theo dấu ; và lọc bỏ các khoảng trắng
+                String[] queries = content.split(";");
+
+                StringBuilder currentQuery = new StringBuilder();
+                for (String query : queries) {
+                    currentQuery.append(query);
+                    String sql = currentQuery.toString().trim();
+
+                    if (sql.isEmpty()) continue;
+
+                    // Kiểm tra xem câu lệnh đã kết thúc thực sự chưa (tránh cắt ngang BEGIN...END)
+                    // Nếu chứa BEGIN mà chưa có END thì cộng dồn tiếp
+                    if (sql.toUpperCase().contains("BEGIN") && !sql.toUpperCase().contains("END")) {
+                        currentQuery.append(";");
+                        continue;
+                    }
+
                     stmt.execute(sql);
+                    currentQuery.setLength(0); // Reset
                 }
+                System.out.println("Thực thi script " + filePath + " thành công!");
             }
-            System.out.println("Tạo database thành công");
         } catch (Exception e) {
-            System.out.println("Lỗi: " + e.getMessage());
+            System.err.println("Lỗi thực thi SQL: " + e.getMessage());
         }
-    }
-    public static void main(String[] args) {
-//        Connection con = openConnection();
-//        DatabaseConnectionManager.initDB();
-        initDB("src/script.sql");
     }
 }
 

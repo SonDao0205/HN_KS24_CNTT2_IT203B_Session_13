@@ -65,8 +65,8 @@ public class OrderDAO implements IOrderDao {
                 SELECT id, user_id, total_amount, order_date, status FROM Orders where user_id = ?
                 """;
 
-        try(Connection conn = DatabaseConnectionManager.openConnection();
-        PreparedStatement ps = conn.prepareStatement(sqlGetOrder)){
+        try(Connection conn = DatabaseConnectionManager.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sqlGetOrder)){
 
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();

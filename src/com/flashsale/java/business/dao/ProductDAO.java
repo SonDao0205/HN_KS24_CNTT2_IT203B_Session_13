@@ -2,6 +2,7 @@ package com.flashsale.java.business.dao;
 
 import com.flashsale.java.entity.Products;
 import com.flashsale.java.utils.DatabaseConnectionManager;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,8 @@ public class ProductDAO {
     public List<Products> getAll() {
         List<Products> list = new ArrayList<>();
         String sql = "SELECT " + PRODUCT_COLUMNS + " FROM Products";
-
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        Connection conn = DatabaseConnectionManager.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
@@ -40,8 +41,8 @@ public class ProductDAO {
     // 2. Tìm theo ID
     public Products findById(int id) {
         String sql = "SELECT " + PRODUCT_COLUMNS + " FROM Products WHERE id = ?";
-
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        Connection conn = DatabaseConnectionManager.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -57,14 +58,13 @@ public class ProductDAO {
     }
 
 
-
     // 3. Cập nhật số lượng kho
     public boolean updateStock(int productId, int quantityChange) {
         // SQL chống trừ kho âm (stock + change >= 0)
         String sql = "UPDATE Products SET stock = stock + ? " +
                 "WHERE id = ? AND (stock + ?) >= 0";
-
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        Connection conn = DatabaseConnectionManager.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, quantityChange);
@@ -83,8 +83,9 @@ public class ProductDAO {
     // 4. Thêm sản phẩm mới
     public boolean insert(Products p) {
         String sql = "INSERT INTO Products (name, price, category, stock) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DatabaseConnectionManager.openConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        Connection conn = DatabaseConnectionManager.getConnection();
+        try (
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, p.getName());
             pstmt.setDouble(2, p.getPrice());
@@ -102,10 +103,10 @@ public class ProductDAO {
     // 5. Xóa sản phẩm theo ID (Dùng PreparedStatement)
     public boolean delete(int id) {
         // Lưu ý: Nếu sản phẩm đã có trong đơn hàng, câu lệnh này sẽ throw SQLException
-        // do ràng buộc Foreign Key trong file DatabaseConnectionManager
+        // do ràng buộc Foreign Key trong file DatabaseConnectionManager.getConnection();
         String sql = "DELETE FROM Products WHERE id = ?";
-
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        Connection conn = DatabaseConnectionManager.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);

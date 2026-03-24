@@ -1,4 +1,4 @@
-package utils;
+package com.flashsale.java.utils;
 
 import java.util.Scanner;
 
@@ -19,6 +19,19 @@ public class InputMethod {
         while (true) {
             try {
                 int n = Integer.parseInt(sc.nextLine());
+                if (n >= 0) return n;
+                System.err.print("Vui lòng nhập số dương.Nhập lại: ");
+            } catch (NumberFormatException e) {
+                System.err.print("Nhập sai định dạng.Nhập lại: ");
+            }
+        }
+    }
+
+    public static double getInputDouble(String message) {
+        System.out.print(message);
+        while (true) {
+            try {
+                double n = Double.parseDouble(sc.nextLine());
                 if (n >= 0) return n;
                 System.err.print("Vui lòng nhập số dương.Nhập lại: ");
             } catch (NumberFormatException e) {

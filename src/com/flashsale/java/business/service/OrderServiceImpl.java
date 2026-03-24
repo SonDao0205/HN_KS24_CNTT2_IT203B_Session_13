@@ -18,7 +18,7 @@ public class OrderServiceImpl implements IOrderService {
     ProductDAO productDao = new ProductDAO();
     @Override
     public List<Orders> findAllOrders() {
-        return orderDao.getAllOrder(DatabaseConnectionManager.openConnection());
+        return orderDao.getAllOrder(DatabaseConnectionManager.getConnection());
     }
 
     @Override
@@ -35,7 +35,7 @@ public class OrderServiceImpl implements IOrderService {
                 System.out.println("Danh sách trống kìa stupid v !");
                 return;
             }
-            conn = DatabaseConnectionManager.openConnection();
+            conn = DatabaseConnectionManager.getConnection();
             if (conn == null){
                 throw new RuntimeException("Có mở được kết nối đâu trời ????");
             }

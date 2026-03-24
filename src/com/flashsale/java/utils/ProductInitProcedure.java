@@ -6,7 +6,7 @@ import java.sql.Statement;
 public class ProductInitProcedure {
     public static void initProcedure(){
         try(
-                Connection conn = DatabaseConnectionManager.openConnection();
+                Connection conn = DatabaseConnectionManager.getConnection();
                 Statement stmt = conn.createStatement();
         ){
             String FUNC_ProductCaculateRevenue = """
@@ -38,7 +38,7 @@ public class ProductInitProcedure {
     }
 
     static void main(String[] args) {
-        Connection con = DatabaseConnectionManager.openConnection();
-        DatabaseConnectionManager.initDB();
+        Connection con = DatabaseConnectionManager.getConnection();
+//        DatabaseConnectionManager.initDB();
     }
 }

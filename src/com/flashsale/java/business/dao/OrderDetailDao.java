@@ -63,7 +63,7 @@ public class OrderDetailDao implements IOrderDetailDao {
                 SELECT id, order_id, product_id, quantity, unit_price FROM Order_Details where order_id = ?
                 """;
 
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        try (Connection conn = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlGetDetail)) {
 
             ps.setInt(1, orderId);

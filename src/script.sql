@@ -34,3 +34,35 @@ CREATE TABLE IF NOT EXISTS Order_Details (
     FOREIGN KEY (product_id) REFERENCES Products(id),
     FOREIGN KEY (order_id) REFERENCES Orders(id)
     );
+
+DROP FUNCTION IF EXISTS FUNC_CalculateCategoryRevenue;
+CREATE FUNCTION FUNC_CalculateCategoryRevenue(p_category VARCHAR(255))
+    RETURNS DECIMAL(15,2)
+    DETERMINISTIC
+BEGIN
+    DECLARE total DECIMAL(15,2);
+
+SELECT SUM(od.quantity * od.unit_price)
+INTO total
+FROM Order_Details od
+         JOIN Products p ON od.product_id = p.id
+WHERE p.category = p_category;
+
+RETURN IFNULL(total, 0);
+END;
+
+
+DROP PROCEDURE IF EXISTS SP_GetTopBuyers;
+CREATE PROCEDURE SP_GetTopBuyers()
+BEGIN
+SELECT
+    u.id,
+    u.name,
+    u.email,
+    SUM(o.total_amount) AS total_spent
+FROM users u
+         JOIN orders o ON u.id = o.user_id
+GROUP BY u.id, u.name, u.email
+ORDER BY total_spent DESC
+    LIMIT 5;
+END;

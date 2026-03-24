@@ -17,7 +17,7 @@ public class UserServiceImpl implements IUserService {
         List<Users> topList = new ArrayList<>();
         String sql = "{CALL SP_GetTopBuyers()}";
 
-        try (Connection conn = DatabaseConnectionManager.openConnection();
+        try (Connection conn = DatabaseConnectionManager.getConnection();
              CallableStatement stmt = conn.prepareCall(sql))
         {
             ResultSet rs = stmt.executeQuery();
