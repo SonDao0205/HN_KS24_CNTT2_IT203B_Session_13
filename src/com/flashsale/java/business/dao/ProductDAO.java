@@ -59,17 +59,24 @@ public class ProductDAO {
 
 
     // 3. Cập nhật số lượng kho
-    // Chú ý: Nhận Connection từ bên ngoài để chạy Transaction đồng bộ với Order
-    public boolean updateStock(Connection conn, int productId, int quantityChange) throws SQLException {
-        // SQL này ngăn việc trừ kho quá số lượng hiện có (overselling)
-        String sql = "UPDATE Products SET stock = stock + ? WHERE id = ? AND (stock + ?) >= 0";
+    public boolean updateStock(int productId, int quantityChange) {
+        // SQL chống trừ kho âm (stock + change >= 0)
+        String sql = "UPDATE Products SET stock = stock + ? " +
+                "WHERE id = ? AND (stock + ?) >= 0";
 
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, quantityChange); // Ví dụ mua 2 cái thì truyền vào -2
+        try (Connection conn = DatabaseConnectionManager.openConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, quantityChange);
             pstmt.setInt(2, productId);
             pstmt.setInt(3, quantityChange);
 
-            return pstmt.executeUpdate() > 0;
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi cập nhật kho: " + e.getMessage());
+            return false;
         }
     }
 
@@ -92,7 +99,7 @@ public class ProductDAO {
     }
 
 
-    // 4. Xóa sản phẩm theo ID (Dùng PreparedStatement)
+    // 5. Xóa sản phẩm theo ID (Dùng PreparedStatement)
     public boolean delete(int id) {
         // Lưu ý: Nếu sản phẩm đã có trong đơn hàng, câu lệnh này sẽ throw SQLException
         // do ràng buộc Foreign Key trong file DatabaseConnectionManager
