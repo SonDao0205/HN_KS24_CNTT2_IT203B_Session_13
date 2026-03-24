@@ -1,5 +1,8 @@
 package com.flashsale.java.business.dao;
 
+import com.flashsale.java.entity.Users;
+import com.flashsale.java.utils.DatabaseConnectionManager;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
