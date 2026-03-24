@@ -1,4 +1,4 @@
-package utils;
+package com.flashsale.java.utils;
 
 import java.io.File;
 import java.sql.Connection;
