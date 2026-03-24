@@ -16,11 +16,12 @@ public class UserServiceImpl implements IUserService {
     private final UserDAO userDAO = new UserDAO();
     @Override
     public boolean addUsers(Users users) {
+        String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         if (users == null) {
             throw new IllegalArgumentException("User không được null");
         }
 
-        if (users.getUsername() == null || users.getUsername().trim().isEmpty()) {
+        if (users.getUsername() == null || users.getUsername().trim().isEmpty() || users.getEmail().matches(regex)) {
             throw new IllegalArgumentException("Tên user không hợp lệ");
         }
 
